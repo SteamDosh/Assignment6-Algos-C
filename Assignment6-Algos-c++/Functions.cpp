@@ -2,8 +2,7 @@
 
 string g_key;
 string g_text;
-int g_currentHash = 1;	
-const int g_primeInt = 101;
+const int g_primeInt = 257;
 
 void SelectFile()
 {
@@ -46,46 +45,50 @@ void ReadFile(string aFileName)
 
 void search(string aText, string aKey)
 {
-	cout << aText << endl;
-	cout << aKey << endl;
+	cout << "Text = " << aText << endl;
+	cout << "Key = " << aKey << endl;
 
-	for (int i = 0; i < aKey.length() - 1; i++)	//Idk what the fuck this is for
-	{
-		g_currentHash = (g_currentHash) % g_primeInt;
-	}
-
-	int patternHash = 0;
-	int textHash = 0;
+	uint64_t patternHash = 0;
+	uint64_t textHash = 0;
+	string outputString = "";
 
 	//Create first hashes
-	for (int i = 0; i < aKey.length(); i++)
-	{
-		patternHash = (patternHash + aKey[i]) % g_primeInt;
-		textHash = (textHash + aText[i]) % g_primeInt;
-	}
+	hashVal(patternHash,aKey,0);
+	hashVal(textHash,aText,0);
 
 	for (int i = 0; i <= aText.length() - aKey.length(); i++)
 	{
-		if (patternHash == textHash)
+		if (patternHash == textHash)				//Hashes match
 		{
 			int j = 0;
-			for (j = 0; j < aKey.length(); j++)		//Individual Checking
+			for (j = 0; j < aKey.length(); j++)		//Mostly redundent Individual Checking 
 			{
 				if (aText[i + j] != aKey[j])
 					break;
 			}
 
-			if (j == aKey.length())	cout << "Pattern found at index "<< i << endl;
+			if (j == aKey.length())	outputString += " "+to_string(i)+",";	//add index to output String
 		}
 
 		if (i < aText.length() - aKey.length())
 		{
-			//New Hash value of i+1..keyLength
-			textHash = ((textHash - aText[i] * g_currentHash) + aText[i + aKey.length()]) % g_primeInt;
+			
+			hashVal(textHash,aText,i);//New Hash value of i+1..keyLength
 
-			//Apparently we can get negatives
-			if (textHash < 0) textHash = (textHash + g_primeInt);
+			
+			if (textHash < 0) textHash = (textHash + g_primeInt);//Apparently we can get negative
+		}	
+	}
 
-		}
+	if (outputString.size()>0) outputString.pop_back();	//remove excess ","
+	cout << "Found pattern at index -" << outputString << "."<< endl;
+}
+
+void hashVal(int aVar, string aText,int aIndex)
+{
+	aVar = 0;
+	for (int i = g_key.size()-1; i > 0; i--)
+	{
+		aVar += pow(g_primeInt, i) + aText[i + aIndex];
 	}
 }
