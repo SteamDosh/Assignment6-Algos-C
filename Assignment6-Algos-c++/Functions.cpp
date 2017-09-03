@@ -25,15 +25,8 @@ void ReadFile(string aFileName)
 	int step = 0;
 	for (string word; fin >> word;)
 	{
-		if (step == 0)
-		{
-			step++;
-			g_text = word;
-		}
-		else
-		{
-			g_key = word;
-		}
+		if (g_text=="")g_text = word;
+		else g_key = word;
 	}
 
 	fin.close();
@@ -72,9 +65,7 @@ void search(string aText, string aKey)
 
 		if (i < aText.length() - aKey.length())
 		{
-			
 			hashVal(textHash,aText,i);//New Hash value of i+1..keyLength
-
 			
 			if (textHash < 0) textHash = (textHash + g_primeInt);//Apparently we can get negative
 		}	
