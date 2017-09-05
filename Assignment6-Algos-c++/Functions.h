@@ -15,4 +15,4 @@ void SelectFile();
 void ReadFile(string aFileName);
 
 void search(string aText, string aKey);
-void hashVal(int aVar, string aText, int aIndex);
+uint64_t hashVal(uint64_t aVar, int aIndex);

@@ -1,8 +1,12 @@
+//ca797 - Christopher Aldous
+//##########################
+
 #include "Functions.h"
 
 string g_key;
 string g_text;
-const int g_primeInt = 257;
+const int g_primeInt = 4;
+const int g_modInt = 257;
 
 void SelectFile()
 {
@@ -22,10 +26,11 @@ void ReadFile(string aFileName)
 		cerr << "Could not open data file!\n";
 		return;
 	}
-	int step = 0;
+
+
 	for (string word; fin >> word;)
 	{
-		if (g_text=="")g_text = word;
+		if (g_text == "")g_text = word;
 		else g_key = word;
 	}
 
@@ -39,47 +44,53 @@ void ReadFile(string aFileName)
 void search(string aText, string aKey)
 {
 	cout << "Text = " << aText << endl;
-	cout << "Key = " << aKey << endl;
+	cout << "Key = " << aKey << " " << g_key << endl;
 
 	uint64_t patternHash = 0;
 	uint64_t textHash = 0;
 	string outputString = "";
 
-	//Create first hashes
-	hashVal(patternHash,aKey,0);
-	hashVal(textHash,aText,0);
+	//Create first hashes 
+	int count = 0;
+	for (int i = g_key.size(); i > 0; i--)
+	{
+		patternHash += (uint64_t)(aKey[count] * pow(g_primeInt, i - 1));
+		textHash += (uint64_t)(aText[count] * pow(g_primeInt, i - 1));
+		count++;
+	}
+
+	cout << "key hash=" << patternHash << endl;
+	cout << "text hash=" << textHash << endl;
 
 	for (int i = 0; i <= aText.length() - aKey.length(); i++)
 	{
 		if (patternHash == textHash)				//Hashes match
 		{
-			int j = 0;
+			int j =		0;
 			for (j = 0; j < aKey.length(); j++)		//Mostly redundent Individual Checking 
 			{
 				if (aText[i + j] != aKey[j])
 					break;
 			}
 
-			if (j == aKey.length())	outputString += " "+to_string(i)+",";	//add index to output String
+			if (j == aKey.length())	outputString += " " + to_string(i) + ",";	//add index to output String
 		}
 
 		if (i < aText.length() - aKey.length())
 		{
-			hashVal(textHash,aText,i);//New Hash value of i+1..keyLength
-			
-			if (textHash < 0) textHash = (textHash + g_primeInt);//Apparently we can get negative
-		}	
+			textHash = hashVal(textHash, i);	//New Hash value of i+1..keyLength
+		}
 	}
 
 	if (outputString.size()>0) outputString.pop_back();	//remove excess ","
-	cout << "Found pattern at index -" << outputString << "."<< endl;
+	cout << "Found pattern at index -" << outputString << "." << endl;
 }
 
-void hashVal(int aVar, string aText,int aIndex)
+uint64_t hashVal(uint64_t aVar, int aIndex)
 {
-	aVar = 0;
-	for (int i = g_key.size()-1; i > 0; i--)
-	{
-		aVar += pow(g_primeInt, i) + aText[i + aIndex];
-	}
+	aVar -= pow(g_primeInt, 4) * g_text[aIndex];	//remove previous Character
+	aVar *= g_primeInt;								//Times by our prime
+	aVar += g_text[aIndex + g_key.size()];			//Add new character
+
+	return aVar;
 }
