@@ -5,8 +5,9 @@
 
 string g_key;
 string g_text;
-const int g_primeInt = 4;
+const int g_primeInt = 101;
 const int g_modInt = 257;
+int g_totalChecks = 0;
 
 void SelectFile()
 {
@@ -58,15 +59,16 @@ void search(string aText, string aKey)
 		textHash += (uint64_t)(aText[count] * pow(g_primeInt, i - 1));
 		count++;
 	}
+	patternHash = modVal(patternHash);
 
-	cout << "key hash=" << patternHash << endl;
-	cout << "text hash=" << textHash << endl;
+	cout << "key Modulo=" << patternHash << endl;
 
 	for (int i = 0; i <= aText.length() - aKey.length(); i++)
 	{
-		if (patternHash == textHash)				//Hashes match
+		if (modVal(patternHash) == modVal(textHash))				//Hashes match
 		{
-			int j =		0;
+			g_totalChecks++;
+			int j =	0;
 			for (j = 0; j < aKey.length(); j++)		//Mostly redundent Individual Checking 
 			{
 				if (aText[i + j] != aKey[j])
@@ -84,6 +86,7 @@ void search(string aText, string aKey)
 
 	if (outputString.size()>0) outputString.pop_back();	//remove excess ","
 	cout << "Found pattern at index -" << outputString << "." << endl;
+	cout << "Performed " << g_totalChecks << " brute force checks." << endl;
 }
 
 uint64_t hashVal(uint64_t aVar, int aIndex)
@@ -93,4 +96,10 @@ uint64_t hashVal(uint64_t aVar, int aIndex)
 	aVar += g_text[aIndex + g_key.size()];			//Add new character
 
 	return aVar;
+}
+
+
+uint64_t modVal(uint64_t aVar) 
+{
+	return aVar %= g_modInt; 
 }

@@ -16,3 +16,4 @@ void ReadFile(string aFileName);
 
 void search(string aText, string aKey);
 uint64_t hashVal(uint64_t aVar, int aIndex);
+uint64_t modVal(uint64_t aVar);
