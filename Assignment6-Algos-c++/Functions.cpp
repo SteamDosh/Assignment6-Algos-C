@@ -2,7 +2,7 @@
 //##########################
 
 #include "Functions.h"
-
+#define fuckthepolice unsigned long long int 
 string g_key;
 string g_text;
 const int g_primeInt = 101;
@@ -65,7 +65,7 @@ void search(string aText, string aKey)
 
 	for (int i = 0; i <= aText.length() - aKey.length(); i++)
 	{
-		if (modVal(patternHash) == modVal(textHash))				//Hashes match
+		if (patternHash == modVal(textHash))				//Hashes match
 		{
 			g_totalChecks++;
 			int j =	0;
@@ -76,7 +76,7 @@ void search(string aText, string aKey)
 			}
 
 			if (j == aKey.length())	outputString += " " + to_string(i) + ",";	//add index to output String
-		}
+		}	
 
 		if (i < aText.length() - aKey.length())
 		{
